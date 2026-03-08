@@ -1,0 +1,16 @@
+{
+  "name": "tailwind-architect",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": {
+    "tailwind-architect": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@tailwind-architect/core": "1.0.0"
+  }
+}
