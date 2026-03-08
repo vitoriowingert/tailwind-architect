@@ -12,7 +12,6 @@
     "typecheck": "npm run typecheck --workspace @tailwind-architect/core && npm run typecheck --workspace tailwind-architect"
   },
   "devDependencies": {
-    "@types/babel__generator": "^7.27.0",
     "@types/babel__traverse": "^7.28.0",
     "@types/node": "^24.5.2",
     "typescript": "^5.9.2",

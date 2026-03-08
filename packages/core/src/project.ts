@@ -1,6 +1,8 @@
+import { cpus } from "node:os";
 import { readFile, readdir, writeFile } from "node:fs/promises";
-import { extname, join } from "node:path";
+import { dirname, extname, join } from "node:path";
 import { analyzeSourceCode, emptyProjectAnalysis } from "./analyze-source.js";
+import { loadTailwindContext } from "./tailwind-context.js";
 import type { AnalyzerConfig, ProjectAnalysis } from "./types.js";
 
 type AnalyzeProjectOptions = {
@@ -68,22 +70,33 @@ async function runInBatches<T>(
 export async function analyzeProject(options: AnalyzeProjectOptions): Promise<AnalyzeProjectResult> {
   const report = emptyProjectAnalysis();
   const changedFiles: string[] = [];
-  const concurrency = Math.max(1, options.concurrency ?? 8);
+  const concurrency = Math.max(1, options.concurrency ?? cpus().length);
   const files = await collectSourceFiles(options.rootDir);
   report.filesScanned = files.length;
 
   const outcomes = await runInBatches(files, concurrency, async (filePath) => {
     const code = await readFile(filePath, "utf8");
     try {
-      const output = analyzeSourceCode(code, options.config);
+      const tailwindContext = await loadTailwindContext(dirname(filePath));
+      const output = analyzeSourceCode(code, options.config, {
+        applyFixes: options.mode === "fix" && options.config.autoFix,
+        tailwindContext
+      });
       return { filePath, output };
-    } catch {
-      return { filePath, output: null };
+    } catch (error) {
+      return { filePath, output: null, error };
     }
   });
 
   for (const outcome of outcomes) {
-    if (!outcome.output) continue;
+    if (!outcome.output) {
+      report.parseErrorCount += 1;
+      report.parseErrors.push({
+        filePath: outcome.filePath,
+        message: outcome.error instanceof Error ? outcome.error.message : "Unknown parse error"
+      });
+      continue;
+    }
 
     const { output, filePath } = outcome;
     const hasIssues =
@@ -104,7 +117,7 @@ export async function analyzeProject(options: AnalyzeProjectOptions): Promise<An
     report.redundancyCount += output.stats.redundancyCount;
     report.suggestionCount += output.stats.suggestionCount;
 
-    if (options.mode === "fix" && output.changed) {
+    if (options.mode === "fix" && options.config.autoFix && output.changed) {
       await writeFile(filePath, output.code, "utf8");
       changedFiles.push(filePath);
     }

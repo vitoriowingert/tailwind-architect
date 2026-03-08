@@ -19,6 +19,8 @@ function valueFromPrefix(utility: string, prefix: string): string | null {
 
 export function detectOptimizationSuggestions(tokens: UtilityToken[]): Suggestion[] {
   const suggestions: Suggestion[] = [];
+  const seen = new Set<string>();
+  const tokenSet = new Set(tokens.map((token) => token.raw));
 
   for (const pair of AXIS_PAIRS) {
     const firstMatches = tokens.filter((token) => token.utility.startsWith(pair.first));
@@ -34,10 +36,16 @@ export function detectOptimizationSuggestions(tokens: UtilityToken[]): Suggestio
       });
       if (!second) continue;
 
+      const after = `${first.variants.length ? `${first.variants.join(":")}:` : ""}${pair.mergedPrefix}${firstValue}`;
+      if (tokenSet.has(after)) continue;
+      const key = `${first.raw}|${second.raw}|${after}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
       suggestions.push({
         kind: "merge-axis",
         before: [first.raw, second.raw],
-        after: `${first.variants.length ? `${first.variants.join(":")}:` : ""}${pair.mergedPrefix}${firstValue}`
+        after
       });
     }
   }

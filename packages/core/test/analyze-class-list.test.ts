@@ -19,13 +19,27 @@ describe("analyzeClassList", () => {
 
   it("detects display conflicts", () => {
     const output = analyzeClassList(["flex", "grid"], defaultConfig);
-    expect(output.conflicts).toHaveLength(1);
-    expect(output.conflicts[0]?.property).toBe("display");
+    expect(output.conflicts.some((item) => item.property === "display")).toBe(true);
   });
 
   it("detects merge-axis suggestions", () => {
     const output = analyzeClassList(["pt-4", "pb-4"], defaultConfig);
     expect(output.suggestions).toHaveLength(1);
     expect(output.suggestions[0]?.after).toBe("py-4");
+  });
+
+  it("keeps non-conflicting text size and text color", () => {
+    const output = analyzeClassList(["text-sm", "text-red-500"], defaultConfig);
+    expect(output.conflicts).toHaveLength(0);
+  });
+
+  it("only removes spacing children when values match", () => {
+    const output = analyzeClassList(["p-4", "px-2"], defaultConfig);
+    expect(output.redundantRemoved).toEqual([]);
+  });
+
+  it("removes default flex-row when flex is present", () => {
+    const output = analyzeClassList(["flex", "flex-row"], defaultConfig);
+    expect(output.redundantRemoved).toEqual(["flex-row"]);
   });
 });

@@ -1,28 +1,33 @@
 import type { Conflict, UtilityToken } from "./types.js";
-import { utilityConflictKind, utilityPropertyKey } from "./utility-map.js";
+import { classifyPairConflict } from "./utility-resolver.js";
 
-function keyWithVariant(token: UtilityToken, property: string): string {
-  return `${token.variants.join(":")}::${property}`;
-}
+type ConflictDetectionOptions = {
+  tailwindPrefix?: string;
+};
 
-export function detectConflicts(tokens: UtilityToken[]): Conflict[] {
+export function detectConflicts(tokens: UtilityToken[], options: ConflictDetectionOptions = {}): Conflict[] {
   const conflicts: Conflict[] = [];
-  const seen = new Map<string, UtilityToken>();
+  const variantGroups = new Map<string, UtilityToken[]>();
 
   for (const token of tokens) {
-    const property = utilityPropertyKey(token);
-    if (!property) continue;
+    const variantKey = token.variants.join(":");
+    variantGroups.set(variantKey, [...(variantGroups.get(variantKey) ?? []), token]);
+  }
 
-    const key = keyWithVariant(token, property);
-    const previous = seen.get(key);
-    if (previous && previous.utility !== token.utility) {
-      conflicts.push({
-        kind: utilityConflictKind(token),
-        property,
-        tokens: [previous.raw, token.raw]
-      });
+  for (const [, groupTokens] of variantGroups) {
+    for (let currentIndex = 0; currentIndex < groupTokens.length; currentIndex += 1) {
+      const current = groupTokens[currentIndex];
+      for (let previousIndex = 0; previousIndex < currentIndex; previousIndex += 1) {
+        const previous = groupTokens[previousIndex];
+        const conflict = classifyPairConflict(previous, current, options);
+        if (!conflict) continue;
+        conflicts.push({
+          kind: conflict.kind,
+          property: conflict.property,
+          tokens: [previous.raw, current.raw]
+        });
+      }
     }
-    seen.set(key, token);
   }
 
   return conflicts;

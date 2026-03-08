@@ -9,22 +9,35 @@ const REDUNDANCY_RULES: Record<string, string[]> = {
   "my-": ["mt-", "mb-"]
 };
 
-function utilityPrefix(utility: string): string | null {
-  if (/^p-\S+/.test(utility)) return "p-";
-  if (/^m-\S+/.test(utility)) return "m-";
-  if (/^px-\S+/.test(utility)) return "px-";
-  if (/^py-\S+/.test(utility)) return "py-";
-  if (/^pt-\S+/.test(utility)) return "pt-";
-  if (/^pb-\S+/.test(utility)) return "pb-";
-  if (/^pl-\S+/.test(utility)) return "pl-";
-  if (/^pr-\S+/.test(utility)) return "pr-";
-  if (/^mx-\S+/.test(utility)) return "mx-";
-  if (/^my-\S+/.test(utility)) return "my-";
-  if (/^mt-\S+/.test(utility)) return "mt-";
-  if (/^mb-\S+/.test(utility)) return "mb-";
-  if (/^ml-\S+/.test(utility)) return "ml-";
-  if (/^mr-\S+/.test(utility)) return "mr-";
-  return null;
+type ParsedUtility = {
+  prefix: string;
+  value: string;
+};
+
+const PREFIXES = [
+  "p-",
+  "m-",
+  "px-",
+  "py-",
+  "pt-",
+  "pb-",
+  "pl-",
+  "pr-",
+  "mx-",
+  "my-",
+  "mt-",
+  "mb-",
+  "ml-",
+  "mr-"
+];
+
+function parseUtility(utility: string): ParsedUtility | null {
+  const prefix = PREFIXES.find((item) => utility.startsWith(item));
+  if (!prefix) return null;
+  return {
+    prefix,
+    value: utility.slice(prefix.length)
+  };
 }
 
 function byVariantStack(tokens: UtilityToken[]): Map<string, UtilityToken[]> {
@@ -44,22 +57,44 @@ export function removeRedundant(tokens: UtilityToken[]): {
   const grouped = byVariantStack(tokens);
 
   for (const [, groupTokens] of grouped) {
-    const prefixToToken = new Map<string, UtilityToken>();
+    const byPrefixAndValue = new Map<string, UtilityToken[]>();
+    const seenUtilities = new Set<string>();
+
     for (const token of groupTokens) {
-      const prefix = utilityPrefix(token.utility);
-      if (prefix) {
-        prefixToToken.set(prefix, token);
+      const key = `${token.utility}`;
+      if (seenUtilities.has(key)) {
+        removed.add(token);
+      } else {
+        seenUtilities.add(key);
+      }
+
+      const parsed = parseUtility(token.utility);
+      if (parsed) {
+        const valueKey = `${parsed.prefix}|${parsed.value}`;
+        byPrefixAndValue.set(valueKey, [...(byPrefixAndValue.get(valueKey) ?? []), token]);
+      }
+    }
+
+    const displayToken = groupTokens.find((token) => token.utility === "flex");
+    if (displayToken) {
+      for (const token of groupTokens) {
+        if (token.utility === "flex-row") {
+          removed.add(token);
+        }
       }
     }
 
     for (const [parent, children] of Object.entries(REDUNDANCY_RULES)) {
-      const parentToken = prefixToToken.get(parent);
-      if (!parentToken) continue;
+      for (const [key, parentTokens] of byPrefixAndValue.entries()) {
+        const [prefix, value] = key.split("|");
+        if (prefix !== parent) continue;
+        if (parentTokens.length === 0) continue;
 
-      for (const child of children) {
-        const childToken = prefixToToken.get(child);
-        if (childToken) {
-          removed.add(childToken);
+        for (const child of children) {
+          const childTokens = byPrefixAndValue.get(`${child}|${value}`) ?? [];
+          for (const childToken of childTokens) {
+            removed.add(childToken);
+          }
         }
       }
     }

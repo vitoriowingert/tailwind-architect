@@ -6,7 +6,7 @@ export type FeatureFlags = {
   autoFix: boolean;
 };
 
-export type ConflictKind = "display" | "color" | "size" | "spacing" | "other";
+export type ConflictKind = "override" | "redundancy" | "impossible-combination";
 
 export type AnalyzerConfig = FeatureFlags & {
   classFunctions: string[];
@@ -20,7 +20,7 @@ export type UtilityToken = {
 
 export type Conflict = {
   kind: ConflictKind;
-  property: string;
+  property: string | null;
   tokens: [string, string];
 };
 
@@ -33,10 +33,25 @@ export type Suggestion = {
 export type AnalysisResult = {
   original: string[];
   sorted: string[];
+  transformed: string[];
   redundantRemoved: string[];
   conflicts: Conflict[];
   suggestions: Suggestion[];
   didChange: boolean;
+};
+
+export type ClassNode = {
+  location: {
+    start: number;
+    end: number;
+    startLine: number;
+    startColumn: number;
+    endLine: number;
+    endColumn: number;
+  };
+  rawString: string;
+  classes: string[];
+  variantStack: string[];
 };
 
 export type FileIssue = {
@@ -46,11 +61,18 @@ export type FileIssue = {
   suggestionCount: number;
 };
 
+export type FileParseError = {
+  filePath: string;
+  message: string;
+};
+
 export type ProjectAnalysis = {
   filesScanned: number;
   filesWithIssues: number;
   conflictCount: number;
   redundancyCount: number;
   suggestionCount: number;
+  parseErrorCount: number;
+  parseErrors: FileParseError[];
   perFile: FileIssue[];
 };

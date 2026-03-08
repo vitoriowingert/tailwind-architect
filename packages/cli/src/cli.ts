@@ -29,13 +29,17 @@ async function run(): Promise<void> {
   console.log(`Conflicts: ${report.conflictCount}`);
   console.log(`Redundant utilities: ${report.redundancyCount}`);
   console.log(`Optimization suggestions: ${report.suggestionCount}`);
+  console.log(`Parse errors: ${report.parseErrorCount}`);
   if (command === "fix") {
     console.log(`Changed files: ${changedFiles.length}`);
   }
 
   if (command === "lint") {
     const hasIssues =
-      report.conflictCount > 0 || report.redundancyCount > 0 || report.suggestionCount > 0;
+      report.conflictCount > 0 ||
+      report.redundancyCount > 0 ||
+      report.suggestionCount > 0 ||
+      report.parseErrorCount > 0;
     exit(hasIssues ? 1 : 0);
   }
 }

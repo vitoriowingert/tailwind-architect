@@ -9,7 +9,7 @@ const CONFIG_FILES = [
   "tailwind.config.mjs"
 ];
 
-type TailwindContext = {
+export type TailwindContext = {
   projectRoot: string;
   configPath: string;
   configHash: string;
