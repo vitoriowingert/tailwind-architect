@@ -1,0 +1,24 @@
+{
+  "name": "@tailwind-architect/workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AST-first Tailwind productivity toolkit",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace @tailwind-architect/core && npm run build --workspace tailwind-architect",
+    "test": "npm run test --workspace @tailwind-architect/core && npm run test --workspace tailwind-architect",
+    "typecheck": "npm run typecheck --workspace @tailwind-architect/core && npm run typecheck --workspace tailwind-architect"
+  },
+  "devDependencies": {
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__traverse": "^7.28.0",
+    "@types/node": "^24.5.2",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
