@@ -7,13 +7,16 @@ on:
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # Required for npm Trusted Publishing (OIDC)
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
 
@@ -23,21 +26,19 @@ jobs:
       - name: Build
         run: npm run build
 
-      # NPM_TOKEN must be an Automation token (or Granular with "Bypass two-factor authentication") so CI does not require OTP (EOTP).
+      # Trusted Publishing requires npm 11.5.1+ (OIDC support)
+      - name: Ensure npm 11+
+        run: npm install -g npm@11
+
+      # Trusted Publishing (OIDC): no NODE_AUTH_TOKEN; npm CLI uses GitHub OIDC token. Configure Trusted Publisher on npm for each package.
       - name: Publish shared
         run: npm publish --workspace @tailwind-architect/shared --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish core
         run: npm publish --workspace @tailwind-architect/core --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish CLI
         run: npm publish --workspace tailwind-architect --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   package-extension:
     runs-on: ubuntu-latest
