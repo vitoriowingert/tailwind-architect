@@ -1,6 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import { parseToken, splitClassString } from "./tokenize.js";
-import type { ConflictKind, UtilityToken } from "./types.js";
+import type { ConflictKind, UtilityResolver, UtilityToken } from "./types.js";
+import type { TailwindContext } from "./tailwind-context.js";
 
 const DISPLAY_IMPOSSIBLE = new Set([
   "block",
@@ -64,6 +65,18 @@ export function resolveUtilityProperty(token: UtilityToken): string | null {
   if (utility.startsWith("gap-")) return "gap";
   return null;
 }
+
+export function resolveToProperties(utility: string, _context?: TailwindContext | null): string[] {
+  const token = { raw: utility, variants: [], utility };
+  const prop = resolveUtilityProperty(token);
+  return prop ? [prop] : [];
+}
+
+export const ruleBasedResolver: UtilityResolver = {
+  resolveToProperties(utility: string, context?: TailwindContext | null): string[] {
+    return resolveToProperties(utility, context);
+  }
+};
 
 function hasToken(classList: string[], token: string): boolean {
   return classList.includes(token);

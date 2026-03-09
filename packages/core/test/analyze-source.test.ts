@@ -49,6 +49,24 @@ describe("analyzeSourceCode", () => {
     });
   });
 
+  it("reorders className in real TSX component (login page snippet)", () => {
+    const source = `
+'use client';
+export default function LoginPage() {
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center bg-muted/30 px-4">
+      <div className="w-full max-w-sm space-y-8">x</div>
+    </main>
+  );
+}
+`;
+    const output = analyzeSourceCode(source, defaultConfig);
+    expect(output.changed).toBe(true);
+    expect(output.code).toContain(
+      "flex flex-col items-center justify-center min-h-screen px-4 bg-muted/30"
+    );
+  });
+
   it("applies readability mode formatting for long class sets", () => {
     const source =
       'const App = () => <div className="flex items-center justify-center w-full max-w-xl p-6 gap-4 bg-white rounded shadow" />;';

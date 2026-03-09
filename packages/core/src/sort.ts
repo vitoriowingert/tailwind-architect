@@ -1,22 +1,16 @@
-import type { UtilityToken } from "./types.js";
+import type { SortGroup, UtilityToken } from "./types.js";
+
+const LAYOUT_UTILITIES = new Set([
+  "block", "inline-block", "inline", "flex", "grid", "hidden",
+  "relative", "absolute", "fixed", "sticky", "container",
+  "flex-col", "flex-col-reverse", "flex-row", "flex-row-reverse",
+  "flex-wrap", "flex-wrap-reverse", "flex-nowrap"
+]);
 
 const GROUP_WEIGHTS: Array<{ name: string; test: (utility: string) => boolean }> = [
   {
     name: "layout",
-    test: (utility) =>
-      [
-        "block",
-        "inline-block",
-        "inline",
-        "flex",
-        "grid",
-        "hidden",
-        "relative",
-        "absolute",
-        "fixed",
-        "sticky",
-        "container"
-      ].includes(utility)
+    test: (utility) => LAYOUT_UTILITIES.has(utility)
   },
   {
     name: "alignment",
@@ -51,7 +45,9 @@ const GROUP_WEIGHTS: Array<{ name: string; test: (utility: string) => boolean }>
       utility.startsWith("mb-") ||
       utility.startsWith("ml-") ||
       utility.startsWith("mr-") ||
-      utility.startsWith("gap-")
+      utility.startsWith("gap-") ||
+      utility.startsWith("space-x-") ||
+      utility.startsWith("space-y-")
   },
   {
     name: "typography",
@@ -84,13 +80,26 @@ const GROUP_WEIGHTS: Array<{ name: string; test: (utility: string) => boolean }>
   }
 ];
 
-function groupWeight(utility: string): number {
-  return GROUP_WEIGHTS.findIndex((entry) => entry.test(utility));
+type SortOptions = { extraGroups?: SortGroup[] };
+
+function buildWeights(extraGroups: SortGroup[] = []): Array<{ test: (utility: string) => boolean }> {
+  const base = GROUP_WEIGHTS.map((g) => ({ test: g.test }));
+  const extra = extraGroups.map((g) => ({ test: g.test }));
+  return [...base, ...extra];
 }
 
-export function sortUtilities(tokens: UtilityToken[]): UtilityToken[] {
+function groupWeight(utility: string, weights: Array<{ test: (utility: string) => boolean }>): number {
+  const i = weights.findIndex((entry) => entry.test(utility));
+  return i >= 0 ? i : weights.length;
+}
+
+export function sortUtilities(
+  tokens: UtilityToken[],
+  options: SortOptions = {}
+): UtilityToken[] {
+  const weights = buildWeights(options.extraGroups);
   return [...tokens].sort((a, b) => {
-    const groupDelta = groupWeight(a.utility) - groupWeight(b.utility);
+    const groupDelta = groupWeight(a.utility, weights) - groupWeight(b.utility, weights);
     if (groupDelta !== 0) {
       return groupDelta;
     }

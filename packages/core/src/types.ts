@@ -1,16 +1,19 @@
-export type FeatureFlags = {
-  sortClasses: boolean;
-  removeRedundant: boolean;
-  detectConflicts: boolean;
-  readabilityMode: boolean;
-  autoFix: boolean;
+import type { TailwindContext } from "./tailwind-context.js";
+
+export type {
+  AnalyzerConfig,
+  DuplicatePattern,
+  FeatureFlags,
+  FileIssue,
+  FileParseError,
+  ProjectAnalysis
+} from "@tailwind-architect/shared";
+
+export type UtilityResolver = {
+  resolveToProperties(utility: string, context?: TailwindContext | null): string[];
 };
 
 export type ConflictKind = "override" | "redundancy" | "impossible-combination";
-
-export type AnalyzerConfig = FeatureFlags & {
-  classFunctions: string[];
-};
 
 export type UtilityToken = {
   raw: string;
@@ -27,7 +30,7 @@ export type Conflict = {
 export type Suggestion = {
   before: [string, string];
   after: string;
-  kind: "merge-axis";
+  kind: "merge-axis" | "extract-pattern";
 };
 
 export type AnalysisResult = {
@@ -37,6 +40,7 @@ export type AnalysisResult = {
   redundantRemoved: string[];
   conflicts: Conflict[];
   suggestions: Suggestion[];
+  pluginLints?: PluginLintResult[];
   didChange: boolean;
 };
 
@@ -54,25 +58,33 @@ export type ClassNode = {
   variantStack: string[];
 };
 
-export type FileIssue = {
-  filePath: string;
-  conflictCount: number;
-  redundancyCount: number;
-  suggestionCount: number;
+export type ClassStringSpan = {
+  start: number;
+  end: number;
+  classString: string;
 };
 
-export type FileParseError = {
-  filePath: string;
-  message: string;
+export type SourceAdapter = (
+  filePath: string,
+  code: string
+) => Promise<ClassStringSpan[]>;
+
+export type PluginLintContext = {
+  classList: string[];
+  variantStack: string[];
 };
 
-export type ProjectAnalysis = {
-  filesScanned: number;
-  filesWithIssues: number;
-  conflictCount: number;
-  redundancyCount: number;
-  suggestionCount: number;
-  parseErrorCount: number;
-  parseErrors: FileParseError[];
-  perFile: FileIssue[];
+export type PluginLintResult = { message: string };
+
+export type SortGroup = {
+  name: string;
+  test: (utility: string) => boolean;
+  order?: number;
+};
+
+export type TailwindArchitectPlugin = {
+  name: string;
+  lintRules?: Array<(context: PluginLintContext) => PluginLintResult[]>;
+  sortGroups?: SortGroup[];
+  suggest?: (context: { classList: string[]; variantStack: string[] }) => Suggestion[];
 };

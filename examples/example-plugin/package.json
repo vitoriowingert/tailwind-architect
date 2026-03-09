@@ -1,0 +1,7 @@
+{
+  "name": "tailwind-architect-plugin-example",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "description": "Example Tailwind Architect plugin: custom lint and sort"
+}

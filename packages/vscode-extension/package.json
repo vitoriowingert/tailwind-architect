@@ -1,0 +1,65 @@
+{
+  "name": "tailwind-architect-vscode",
+  "displayName": "Tailwind Architect",
+  "description": "Analyze and fix Tailwind CSS classes: sort, remove redundancy, detect conflicts",
+  "version": "1.0.0",
+  "type": "module",
+  "publisher": "tailwind-architect",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": ["Linters", "Formatters"],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:vue",
+    "onLanguage:astro",
+    "onLanguage:svelte",
+    "onCommand:tailwindArchitect.fixClasses",
+    "onCommand:tailwindArchitect.fixWorkspace"
+  ],
+  "main": "./out/extension.bundle.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "tailwindArchitect.fixClasses",
+        "title": "Tailwind Architect: Fix Classes"
+      },
+      {
+        "command": "tailwindArchitect.fixWorkspace",
+        "title": "Tailwind Architect: Fix Workspace"
+      }
+    ],
+    "configuration": {
+      "title": "Tailwind Architect",
+      "properties": {
+        "tailwindArchitect.formatOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run Tailwind Architect fix on save for supported files"
+        },
+        "tailwindArchitect.diagnosticsAtSpanLevel": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show one diagnostic per class string span (conflicts/suggestions) instead of one per file"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "build": "npm run compile && node build.mjs",
+    "package": "npx vsce package --no-dependencies"
+  },
+  "dependencies": {
+    "@tailwind-architect/core": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@vscode/vsce": "^3.2.1",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.9.2"
+  }
+}

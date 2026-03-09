@@ -7,9 +7,10 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace @tailwind-architect/core && npm run build --workspace tailwind-architect",
+    "build": "npm run build --workspace @tailwind-architect/shared && npm run build --workspace @tailwind-architect/core && npm run build --workspace tailwind-architect && npm run build --workspace tailwind-architect-vscode",
     "test": "npm run test --workspace @tailwind-architect/core && npm run test --workspace tailwind-architect",
-    "typecheck": "npm run typecheck --workspace @tailwind-architect/core && npm run typecheck --workspace tailwind-architect"
+    "typecheck": "npm run typecheck --workspace @tailwind-architect/core && npm run typecheck --workspace tailwind-architect",
+    "benchmark": "node packages/cli/dist/cli.js analyze ."
   },
   "devDependencies": {
     "@types/babel__traverse": "^7.28.0",

@@ -1,0 +1,13 @@
+{
+  "name": "tailwind-architect-example-vanilla",
+  "private": true,
+  "scripts": {
+    "analyze": "tailwind-architect analyze .",
+    "fix": "tailwind-architect fix .",
+    "lint": "tailwind-architect lint ."
+  },
+  "devDependencies": {
+    "tailwind-architect": "1.0.0",
+    "tailwindcss": "^3.4.0"
+  }
+}
