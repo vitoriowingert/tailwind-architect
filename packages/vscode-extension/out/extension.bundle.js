@@ -40,7 +40,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// ../core/dist/adapters/astro.js
+// node_modules/@tailwind-architect/core/dist/adapters/astro.js
 function extractFromFragment(code, offset) {
   const spans = [];
   const classDouble = /class\s*=\s*"([^"]*)"/g;
@@ -70,12 +70,11 @@ async function extractAstroClassSpans(_filePath, code) {
   return spans;
 }
 var init_astro = __esm({
-  "../core/dist/adapters/astro.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/adapters/astro.js"() {
   }
 });
 
-// ../core/dist/adapters/svelte.js
+// node_modules/@tailwind-architect/core/dist/adapters/svelte.js
 function extractFromFragment2(code, offset) {
   const spans = [];
   const classDouble = /class\s*=\s*"([^"]*)"/g;
@@ -101,12 +100,11 @@ async function extractSvelteClassSpans(_filePath, code) {
   return extractFromFragment2(code, 0);
 }
 var init_svelte = __esm({
-  "../core/dist/adapters/svelte.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/adapters/svelte.js"() {
   }
 });
 
-// ../core/dist/adapters/vue.js
+// node_modules/@tailwind-architect/core/dist/adapters/vue.js
 async function extractVueClassSpans(_filePath, code) {
   const templateMatch = code.match(/<template[^>]*>([\s\S]*?)<\/template>/);
   if (!templateMatch)
@@ -135,21 +133,19 @@ async function extractVueClassSpans(_filePath, code) {
 }
 var CLASS_DOUBLE, CLASS_SINGLE;
 var init_vue = __esm({
-  "../core/dist/adapters/vue.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/adapters/vue.js"() {
     CLASS_DOUBLE = /class\s*=\s*"([^"]*)"/g;
     CLASS_SINGLE = /class\s*=\s*'([^']*)'/g;
   }
 });
 
-// ../core/dist/adapters/index.js
+// node_modules/@tailwind-architect/core/dist/adapters/index.js
 function getAdapterForExtension(ext) {
   return ADAPTERS[ext] ?? null;
 }
 var ADAPTERS;
 var init_adapters = __esm({
-  "../core/dist/adapters/index.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/adapters/index.js"() {
     init_astro();
     init_svelte();
     init_vue();
@@ -3340,7 +3336,7 @@ var init_bundle_mjs = __esm({
   }
 });
 
-// ../core/dist/tokenize.js
+// node_modules/@tailwind-architect/core/dist/tokenize.js
 function isEscaped(input, index) {
   let slashCount = 0;
   for (let i = index - 1; i >= 0 && input[i] === "\\"; i -= 1) {
@@ -3451,12 +3447,11 @@ function serializeTokens(tokens) {
   return tokens.map((token) => token.variants.length ? `${token.variants.join(":")}:${token.utility}` : token.utility);
 }
 var init_tokenize = __esm({
-  "../core/dist/tokenize.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/tokenize.js"() {
   }
 });
 
-// ../core/dist/utility-resolver.js
+// node_modules/@tailwind-architect/core/dist/utility-resolver.js
 function textProperty(utility) {
   const value = utility.slice("text-".length);
   if (FONT_SIZE_VALUES.has(value) || /^\[[^\]]+\]$/.test(value)) {
@@ -3541,8 +3536,7 @@ function normalizeForMerge(raw, tailwindPrefix) {
 }
 var DISPLAY_IMPOSSIBLE, FONT_SIZE_VALUES, ruleBasedResolver;
 var init_utility_resolver = __esm({
-  "../core/dist/utility-resolver.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/utility-resolver.js"() {
     init_bundle_mjs();
     init_tokenize();
     DISPLAY_IMPOSSIBLE = /* @__PURE__ */ new Set([
@@ -3579,7 +3573,7 @@ var init_utility_resolver = __esm({
   }
 });
 
-// ../core/dist/conflicts.js
+// node_modules/@tailwind-architect/core/dist/conflicts.js
 function detectConflicts(tokens, options = {}) {
   const conflicts = [];
   const variantGroups = /* @__PURE__ */ new Map();
@@ -3606,13 +3600,12 @@ function detectConflicts(tokens, options = {}) {
   return conflicts;
 }
 var init_conflicts = __esm({
-  "../core/dist/conflicts.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/conflicts.js"() {
     init_utility_resolver();
   }
 });
 
-// ../core/dist/optimize.js
+// node_modules/@tailwind-architect/core/dist/optimize.js
 function valueFromPrefix(utility, prefix) {
   return utility.startsWith(prefix) ? utility.slice(prefix.length) : null;
 }
@@ -3651,8 +3644,7 @@ function detectOptimizationSuggestions(tokens) {
 }
 var AXIS_PAIRS;
 var init_optimize = __esm({
-  "../core/dist/optimize.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/optimize.js"() {
     AXIS_PAIRS = [
       { first: "pt-", second: "pb-", mergedPrefix: "py-" },
       { first: "pl-", second: "pr-", mergedPrefix: "px-" },
@@ -3662,7 +3654,7 @@ var init_optimize = __esm({
   }
 });
 
-// ../core/dist/redundancy.js
+// node_modules/@tailwind-architect/core/dist/redundancy.js
 function parseUtility(utility) {
   const prefix = PREFIXES.find((item) => utility.startsWith(item));
   if (!prefix)
@@ -3730,8 +3722,7 @@ function removeRedundant(tokens) {
 }
 var REDUNDANCY_RULES, PREFIXES;
 var init_redundancy = __esm({
-  "../core/dist/redundancy.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/redundancy.js"() {
     REDUNDANCY_RULES = {
       "p-": ["px-", "py-", "pt-", "pb-", "pl-", "pr-"],
       "m-": ["mx-", "my-", "mt-", "mb-", "ml-", "mr-"],
@@ -3759,7 +3750,7 @@ var init_redundancy = __esm({
   }
 });
 
-// ../core/dist/sort.js
+// node_modules/@tailwind-architect/core/dist/sort.js
 function buildWeights(extraGroups = []) {
   const base = GROUP_WEIGHTS.map((g) => ({ test: g.test }));
   const extra = extraGroups.map((g) => ({ test: g.test }));
@@ -3785,8 +3776,7 @@ function sortUtilities(tokens, options = {}) {
 }
 var LAYOUT_UTILITIES, GROUP_WEIGHTS;
 var init_sort = __esm({
-  "../core/dist/sort.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/sort.js"() {
     LAYOUT_UTILITIES = /* @__PURE__ */ new Set([
       "block",
       "inline-block",
@@ -3844,7 +3834,7 @@ var init_sort = __esm({
   }
 });
 
-// ../core/dist/analyze-class-list.js
+// node_modules/@tailwind-architect/core/dist/analyze-class-list.js
 function analyzeClassList(classNames, config, options = {}) {
   const parsed = parseTokens(classNames);
   const original = serializeTokens(parsed);
@@ -3879,8 +3869,7 @@ function analyzeClassList(classNames, config, options = {}) {
   };
 }
 var init_analyze_class_list = __esm({
-  "../core/dist/analyze-class-list.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/analyze-class-list.js"() {
     init_conflicts();
     init_optimize();
     init_redundancy();
@@ -3889,7 +3878,7 @@ var init_analyze_class_list = __esm({
   }
 });
 
-// ../core/dist/analyze-with-adapter.js
+// node_modules/@tailwind-architect/core/dist/analyze-with-adapter.js
 async function analyzeSourceWithAdapter(code, config, spans, options = {}) {
   const { tailwindPrefix, applyFixes = true, plugins } = options;
   const stats = { conflictCount: 0, redundancyCount: 0, suggestionCount: 0 };
@@ -3920,14 +3909,13 @@ async function analyzeSourceWithAdapter(code, config, spans, options = {}) {
   return { code: output, changed: true, stats };
 }
 var init_analyze_with_adapter = __esm({
-  "../core/dist/analyze-with-adapter.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/analyze-with-adapter.js"() {
     init_analyze_class_list();
     init_tokenize();
   }
 });
 
-// ../core/dist/duplicate-patterns.js
+// node_modules/@tailwind-architect/core/dist/duplicate-patterns.js
 function normalize(classString) {
   return classString.trim().split(/\s+/).filter(Boolean).sort().join(" ");
 }
@@ -3962,8 +3950,7 @@ function findDuplicatePatterns(filesData, minOccurrences = 2) {
   return result.sort((a, b) => b.occurrences - a.occurrences);
 }
 var init_duplicate_patterns = __esm({
-  "../core/dist/duplicate-patterns.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/duplicate-patterns.js"() {
   }
 });
 
@@ -47309,7 +47296,7 @@ var require_lib8 = __commonJS({
   }
 });
 
-// ../core/dist/analyze-source.js
+// node_modules/@tailwind-architect/core/dist/analyze-source.js
 function staticTemplateValue(node) {
   if (node.expressions.length > 0 || node.quasis.length !== 1) {
     return null;
@@ -47560,8 +47547,7 @@ function emptyProjectAnalysis() {
 }
 var import_parser, traverseLib, t;
 var init_analyze_source = __esm({
-  "../core/dist/analyze-source.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/analyze-source.js"() {
     import_parser = __toESM(require_lib(), 1);
     traverseLib = __toESM(require_lib8(), 1);
     t = __toESM(require_lib4(), 1);
@@ -47570,7 +47556,7 @@ var init_analyze_source = __esm({
   }
 });
 
-// ../core/dist/plugins.js
+// node_modules/@tailwind-architect/core/dist/plugins.js
 import { join } from "node:path";
 async function loadPlugins(cwd, pluginNames) {
   const plugins = [];
@@ -47590,12 +47576,11 @@ async function loadPlugins(cwd, pluginNames) {
   return plugins;
 }
 var init_plugins = __esm({
-  "../core/dist/plugins.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/plugins.js"() {
   }
 });
 
-// ../core/dist/tailwind-context.js
+// node_modules/@tailwind-architect/core/dist/tailwind-context.js
 import { createHash } from "node:crypto";
 import { access, readFile } from "node:fs/promises";
 import { dirname, join as join2, parse as parse2 } from "node:path";
@@ -47721,17 +47706,15 @@ async function loadTailwindContext(startDir) {
 }
 var contextCache;
 var init_tailwind_context = __esm({
-  "../core/dist/tailwind-context.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/tailwind-context.js"() {
     contextCache = /* @__PURE__ */ new Map();
   }
 });
 
-// ../shared/dist/constants.js
+// node_modules/@tailwind-architect/shared/dist/constants.js
 var SOURCE_EXTENSIONS, IGNORE_DIRS;
 var init_constants = __esm({
-  "../shared/dist/constants.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/shared/dist/constants.js"() {
     SOURCE_EXTENSIONS = /* @__PURE__ */ new Set([
       ".ts",
       ".tsx",
@@ -47754,15 +47737,14 @@ var init_constants = __esm({
   }
 });
 
-// ../shared/dist/index.js
+// node_modules/@tailwind-architect/shared/dist/index.js
 var init_dist = __esm({
-  "../shared/dist/index.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/shared/dist/index.js"() {
     init_constants();
   }
 });
 
-// ../core/dist/project.js
+// node_modules/@tailwind-architect/core/dist/project.js
 import { cpus } from "node:os";
 import { readFile as readFile2, readdir, writeFile } from "node:fs/promises";
 import { dirname as dirname2, extname, join as join3 } from "node:path";
@@ -47960,8 +47942,7 @@ async function analyzeProject(options) {
 }
 var DEFAULT_MAX_PER_FILE_ENTRIES;
 var init_project = __esm({
-  "../core/dist/project.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/project.js"() {
     init_adapters();
     init_analyze_with_adapter();
     init_analyze_source();
@@ -47973,7 +47954,7 @@ var init_project = __esm({
   }
 });
 
-// ../core/dist/config.js
+// node_modules/@tailwind-architect/core/dist/config.js
 import { readFile as readFile3 } from "node:fs/promises";
 import { join as join4 } from "node:path";
 async function loadArchitectConfig(cwd) {
@@ -47993,8 +47974,7 @@ async function loadArchitectConfig(cwd) {
 }
 var DEFAULT_CONFIG, defaultConfig;
 var init_config = __esm({
-  "../core/dist/config.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/config.js"() {
     DEFAULT_CONFIG = {
       sortClasses: true,
       removeRedundant: true,
@@ -48008,7 +47988,7 @@ var init_config = __esm({
   }
 });
 
-// ../core/dist/index.js
+// node_modules/@tailwind-architect/core/dist/index.js
 var dist_exports = {};
 __export(dist_exports, {
   analyzeClassList: () => analyzeClassList,
@@ -48026,8 +48006,7 @@ __export(dist_exports, {
   ruleBasedResolver: () => ruleBasedResolver
 });
 var init_dist2 = __esm({
-  "../core/dist/index.js"() {
-    "use strict";
+  "node_modules/@tailwind-architect/core/dist/index.js"() {
     init_adapters();
     init_analyze_with_adapter();
     init_duplicate_patterns();

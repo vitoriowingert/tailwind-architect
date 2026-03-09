@@ -4,7 +4,7 @@
   "description": "Analyze and fix Tailwind CSS classes: sort, remove redundancy, detect conflicts",
   "version": "1.0.4",
   "type": "module",
-  "publisher": "tailwind-architect",
+  "publisher": "vitoriowingert",
   "engines": {
     "vscode": "^1.74.0"
   },
