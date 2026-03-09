@@ -53,12 +53,9 @@ jobs:
       - name: Install
         run: npm ci
 
-      # Extension depends on @tailwind-architect/core; build shared and core first so dist/ and types exist.
-      - name: Build extension dependencies
-        run: npm run build --workspace @tailwind-architect/shared && npm run build --workspace @tailwind-architect/core
-
-      - name: Build extension
-        run: npm run build --workspace tailwind-architect-vscode
+      # Full build (shared → core → cli → vscode-extension) so extension TypeScript sees @tailwind-architect/core dist/ and types.
+      - name: Build
+        run: npm run build
 
       - name: Install vsce
         run: npm install -g @vscode/vsce
