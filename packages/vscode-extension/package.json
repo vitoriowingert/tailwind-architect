@@ -2,7 +2,7 @@
   "name": "tailwind-architect-vscode",
   "displayName": "Tailwind Architect",
   "description": "Analyze and fix Tailwind CSS classes: sort, remove redundancy, detect conflicts",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "type": "module",
   "publisher": "tailwind-architect",
   "engines": {
