@@ -1,12 +1,12 @@
 # Tailwind Architect
 
-[![Build](https://github.com/vitorio/tailwind-architect/actions/workflows/ci.yml/badge.svg)](https://github.com/vitorio/tailwind-architect/actions/workflows/ci.yml)
+[![Build](https://github.com/vitoriowingert/tailwind-architect/actions/workflows/ci.yml/badge.svg)](https://github.com/vitoriowingert/tailwind-architect/actions/workflows/ci.yml)
 [![npm (scoped)](https://img.shields.io/npm/v/tailwind-architect.svg)](https://www.npmjs.com/package/tailwind-architect)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 AST-first tooling for safe Tailwind class analysis and refactoring.
 
-**Docs:** [Guide](https://vitorio.github.io/tailwind-architect/) (or run `website/` locally with VitePress).
+**Docs:** [Guide](https://vitoriowingert.github.io/tailwind-architect/) (or run `website/` locally with VitePress).
 
 ## Packages
 

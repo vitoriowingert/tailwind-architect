@@ -32,4 +32,4 @@ Default `classFunctions`: `["clsx", "cn", "cva", "tw"]`.
 
 ## Plugins
 
-Plugins add custom lint rules, sort groups, and suggestions. See [Extensibility](https://github.com/vitorio/tailwind-architect/blob/main/docs/extensibility.md#plugin-system) and `examples/example-plugin` in the repo.
+Plugins add custom lint rules, sort groups, and suggestions. See [Extensibility](https://github.com/vitoriowingert/tailwind-architect/blob/main/docs/extensibility.md#plugin-system) and `examples/example-plugin` in the repo.

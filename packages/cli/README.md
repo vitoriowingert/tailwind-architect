@@ -2,7 +2,7 @@
 
 **CLI for analyzing and fixing Tailwind CSS classes** — sort utilities, remove redundant classes, detect conflicts, and apply optimizations across your codebase. Uses an AST-first engine that understands Tailwind v3/v4 and supports JSX, Vue, Astro, and Svelte.
 
-Part of the [Tailwind Architect](https://github.com/vitorio/tailwind-architect) toolchain. Use this CLI for CI, scripts, and batch fixes; use the [VS Code / Cursor extension](https://marketplace.visualstudio.com/) for in-editor diagnostics and quick fixes.
+Part of the [Tailwind Architect](https://github.com/vitoriowingert/tailwind-architect) toolchain. Use this CLI for CI, scripts, and batch fixes; use the [VS Code / Cursor extension](https://marketplace.visualstudio.com/) for in-editor diagnostics and quick fixes.
 
 ---
 
@@ -154,14 +154,14 @@ The CLI is built on **[@tailwind-architect/core](https://www.npmjs.com/package/@
 - `loadArchitectConfig` — Load `tailwind-architect.config.json`.
 - `loadTailwindContext` — Resolve Tailwind config and version.
 
-See the [core package](https://www.npmjs.com/package/@tailwind-architect/core) and the [repository](https://github.com/vitorio/tailwind-architect) for types and examples.
+See the [core package](https://www.npmjs.com/package/@tailwind-architect/core) and the [repository](https://github.com/vitoriowingert/tailwind-architect) for types and examples.
 
 ---
 
 ## Links
 
-- **Repository:** [tailwind-architect](https://github.com/vitorio/tailwind-architect)
-- **Docs / guide:** [vitorio.github.io/tailwind-architect](https://vitorio.github.io/tailwind-architect/)
+- **Repository:** [tailwind-architect](https://github.com/vitoriowingert/tailwind-architect)
+- **Docs / guide:** [vitoriowingert.github.io/tailwind-architect](https://vitoriowingert.github.io/tailwind-architect/)
 - **VS Code / Cursor extension:** [Tailwind Architect](https://marketplace.visualstudio.com/) — diagnostics, quick fix, “Fix Classes”, “Fix Workspace”, optional format on save
 - **Core API (npm):** [@tailwind-architect/core](https://www.npmjs.com/package/@tailwind-architect/core)
 
@@ -169,4 +169,4 @@ See the [core package](https://www.npmjs.com/package/@tailwind-architect/core) a
 
 ## License
 
-MIT. See the [project license](https://github.com/vitorio/tailwind-architect/blob/main/LICENSE) in the main repository.
+MIT. See the [project license](https://github.com/vitoriowingert/tailwind-architect/blob/main/LICENSE) in the main repository.

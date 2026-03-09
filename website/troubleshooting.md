@@ -10,7 +10,7 @@ If you see parse errors in the report, the file may use syntax the parser doesnâ
 
 ## Worker / memory issues
 
-For very large repos, reduce concurrency: `--max-workers 2`. See [Performance](https://github.com/vitorio/tailwind-architect/blob/main/docs/performance.md).
+For very large repos, reduce concurrency: `--max-workers 2`. See [Performance](https://github.com/vitoriowingert/tailwind-architect/blob/main/docs/performance.md).
 
 ## Extension not activating
 

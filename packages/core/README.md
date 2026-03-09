@@ -98,8 +98,8 @@ JS/TS/JSX/TSX (including `className` / `class` and class strings inside `classFu
 
 ## Links
 
-- **Repository:** [tailwind-architect](https://github.com/vitorio/tailwind-architect)
-- **Docs:** [vitorio.github.io/tailwind-architect](https://vitorio.github.io/tailwind-architect/)
+- **Repository:** [tailwind-architect](https://github.com/vitoriowingert/tailwind-architect)
+- **Docs:** [vitoriowingert.github.io/tailwind-architect](https://vitoriowingert.github.io/tailwind-architect/)
 - **CLI:** [tailwind-architect](https://www.npmjs.com/package/tailwind-architect)
 - **Shared types:** [@tailwind-architect/shared](https://www.npmjs.com/package/@tailwind-architect/shared)
 
@@ -107,4 +107,4 @@ JS/TS/JSX/TSX (including `className` / `class` and class strings inside `classFu
 
 ## License
 
-MIT. See the [project license](https://github.com/vitorio/tailwind-architect/blob/main/LICENSE).
+MIT. See the [project license](https://github.com/vitoriowingert/tailwind-architect/blob/main/LICENSE).

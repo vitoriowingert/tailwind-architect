@@ -1,6 +1,6 @@
 # @tailwind-architect/shared
 
-Shared types and constants for the [Tailwind Architect](https://github.com/vitorio/tailwind-architect) toolchain. Used by `@tailwind-architect/core` and the `tailwind-architect` CLI.
+Shared types and constants for the [Tailwind Architect](https://github.com/vitoriowingert/tailwind-architect) toolchain. Used by `@tailwind-architect/core` and the `tailwind-architect` CLI.
 
 **Most users should use the [CLI](https://www.npmjs.com/package/tailwind-architect) or [core](https://www.npmjs.com/package/@tailwind-architect/core)** for analysis and fixes. This package is intended for consumers that need the shared type definitions and constants without pulling in the full core engine.
 
@@ -38,7 +38,7 @@ npm install @tailwind-architect/shared
 
 ## Links
 
-- **Repository:** [tailwind-architect](https://github.com/vitorio/tailwind-architect)
+- **Repository:** [tailwind-architect](https://github.com/vitoriowingert/tailwind-architect)
 - **CLI:** [tailwind-architect](https://www.npmjs.com/package/tailwind-architect)
 - **Core (engine):** [@tailwind-architect/core](https://www.npmjs.com/package/@tailwind-architect/core)
 
@@ -46,4 +46,4 @@ npm install @tailwind-architect/shared
 
 ## License
 
-MIT. See the [project license](https://github.com/vitorio/tailwind-architect/blob/main/LICENSE).
+MIT. See the [project license](https://github.com/vitoriowingert/tailwind-architect/blob/main/LICENSE).

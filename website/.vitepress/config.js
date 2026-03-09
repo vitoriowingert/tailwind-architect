@@ -8,7 +8,7 @@ export default {
       { text: "CLI", link: "/cli" },
       { text: "Configuration", link: "/configuration" },
       { text: "Extension", link: "/extension" },
-      { text: "GitHub", link: "https://github.com/vitorio/tailwind-architect" }
+      { text: "GitHub", link: "https://github.com/vitoriowingert/tailwind-architect" }
     ],
     sidebar: [
       { text: "Introduction", link: "/" },

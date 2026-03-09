@@ -7,7 +7,7 @@ Thanks for your interest in contributing.
 1. Clone the repo and install dependencies:
 
    ```bash
-   git clone https://github.com/vitorio/tailwind-architect.git
+   git clone https://github.com/vitoriowingert/tailwind-architect.git
    cd tailwind-architect
    npm install
    ```

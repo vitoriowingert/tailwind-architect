@@ -2,7 +2,7 @@
 
 Analyze and fix Tailwind CSS classes directly in your editor: sort utilities, remove redundancy, detect conflicts, and apply optimization suggestions.
 
-Part of the [Tailwind Architect](https://github.com/vitorio/tailwind-architect) toolchain. Use this extension in VS Code or Cursor; use the [CLI](https://www.npmjs.com/package/tailwind-architect) for CI and batch fixes.
+Part of the [Tailwind Architect](https://github.com/vitoriowingert/tailwind-architect) toolchain. Use this extension in VS Code or Cursor; use the [CLI](https://www.npmjs.com/package/tailwind-architect) for CI and batch fixes.
 
 ---
 
@@ -139,13 +139,13 @@ If the file is missing, the extension uses the defaults above.
 
 ## Links
 
-- **Repository:** [tailwind-architect](https://github.com/vitorio/tailwind-architect)
+- **Repository:** [tailwind-architect](https://github.com/vitoriowingert/tailwind-architect)
 - **CLI (npm):** [tailwind-architect](https://www.npmjs.com/package/tailwind-architect)
-- **Docs:** [Guide](https://vitorio.github.io/tailwind-architect/) (or `website/` in the repo)
+- **Docs:** [Guide](https://vitoriowingert.github.io/tailwind-architect/) (or `website/` in the repo)
 - **Core API:** [@tailwind-architect/core](https://www.npmjs.com/package/@tailwind-architect/core)
 
 ---
 
 ## License
 
-MIT. See the [project license](https://github.com/vitorio/tailwind-architect/blob/main/LICENSE) in the main repository.
+MIT. See the [project license](https://github.com/vitoriowingert/tailwind-architect/blob/main/LICENSE) in the main repository.
