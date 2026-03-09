@@ -23,6 +23,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      # NPM_TOKEN must be an Automation token (or Granular with "Bypass two-factor authentication") so CI does not require OTP (EOTP).
+      - name: Publish shared
+        run: npm publish --workspace @tailwind-architect/shared --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish core
         run: npm publish --workspace @tailwind-architect/core --access public
         env:
@@ -46,6 +52,10 @@ jobs:
 
       - name: Install
         run: npm ci
+
+      # Extension depends on @tailwind-architect/core; build shared and core first so dist/ and types exist.
+      - name: Build extension dependencies
+        run: npm run build --workspace @tailwind-architect/shared && npm run build --workspace @tailwind-architect/core
 
       - name: Build extension
         run: npm run build --workspace tailwind-architect-vscode

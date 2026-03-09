@@ -55,3 +55,15 @@ To build a custom plugin, implement the `TailwindArchitectPlugin` contract (see 
 - TypeScript with strict mode.
 - Prefer clear names and small functions; avoid duplication.
 - Add or update tests for behavior changes.
+
+## Publishing (maintainers)
+
+Releases are published when a GitHub Release is created (tag, e.g. `v1.0.0`). The workflow [.github/workflows/publish.yml](.github/workflows/publish.yml) runs and:
+
+- **publish-npm**: Publishes `@tailwind-architect/shared`, `@tailwind-architect/core`, and `tailwind-architect` (CLI) to npm.
+- **package-extension**: Builds and packages the VS Code extension; optionally publishes to the Marketplace if `VSCE_TOKEN` is set.
+
+**Required secrets (Settings → Secrets and variables → Actions):**
+
+- **NPM_TOKEN**: npm access token with publish rights for the org. If you see `EOTP` (one-time password) errors in CI, the token must be an **Automation** token (classic) or a **Granular** token with **"Bypass two-factor authentication"** enabled—otherwise 2FA blocks unattended publish.
+- **VSCE_TOKEN** (optional): VS Code Marketplace personal access token; if missing, extension build and package still run, but publish to the Marketplace is skipped.
