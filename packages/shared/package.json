@@ -1,6 +1,10 @@
 {
   "name": "@tailwind-architect/shared",
   "version": "1.0.4",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vitoriowingert/tailwind-architect.git"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

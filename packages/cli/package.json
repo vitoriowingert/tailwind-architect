@@ -1,6 +1,10 @@
 {
   "name": "tailwind-architect",
   "version": "1.0.4",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vitoriowingert/tailwind-architect.git"
+  },
   "type": "module",
   "bin": {
     "tailwind-architect": "dist/cli.js"
