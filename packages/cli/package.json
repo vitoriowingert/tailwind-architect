@@ -1,6 +1,6 @@
 {
   "name": "tailwind-architect",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "bin": {
     "tailwind-architect": "dist/cli.js"
@@ -12,6 +12,6 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@tailwind-architect/core": "1.0.0"
+    "@tailwind-architect/core": "1.0.1"
   }
 }
