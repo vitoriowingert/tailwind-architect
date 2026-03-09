@@ -3,7 +3,7 @@
   "displayName": "Tailwind Architect",
   "icon": "images/logo.png",
   "description": "Analyze and fix Tailwind CSS classes: sort, remove redundancy, detect conflicts",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "license": "MIT",
   "type": "module",
   "publisher": "vitoriowingert",
@@ -65,7 +65,7 @@
     "package": "npx vsce package --no-dependencies"
   },
   "dependencies": {
-    "@tailwind-architect/core": "1.0.7"
+    "@tailwind-architect/core": "1.0.8"
   },
   "devDependencies": {
     "@types/vscode": "^1.74.0",

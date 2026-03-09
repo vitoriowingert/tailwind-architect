@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.8] - 2025-03-09
+
+### Changed
+
+- **Docs:** README, website (io), and CONTRIBUTING aligned with current features (config, CLI JSON report, publishing, extension settings).
+- **Links:** Direct VS Code Marketplace link for the extension; CI and extensibility references verified.
+
 ## [1.0.7] - 2025-03-09
 
 ### Added
