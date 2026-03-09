@@ -33,7 +33,7 @@ jobs:
           cache: "npm"
 
       - name: Install website dependencies
-        run: cd website && npm ci
+        run: cd website && npm install
 
       - name: Build docs
         run: cd website && npm run build
