@@ -124,6 +124,3 @@ jobs:
 
       - name: Publish core to GitHub Packages
         run: npm publish --workspace @tailwind-architect/core --access public --registry=https://npm.pkg.github.com
-
-      - name: Publish CLI to GitHub Packages
-        run: npm publish --workspace tailwind-architect --access public --registry=https://npm.pkg.github.com
