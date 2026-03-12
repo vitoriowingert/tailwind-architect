@@ -61,7 +61,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/vitoriowingert/tailwind-architect.git"
+    "url": "https://github.com/tailwind-architect/tailwind-architect.git"
   },
   "scripts": {
     "compile": "tsc -p .",
