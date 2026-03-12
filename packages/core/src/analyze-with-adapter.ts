@@ -73,8 +73,12 @@ export async function analyzeSourceWithAdapter(
     includeDetails?: boolean;
   } = {}
 ): Promise<AdapterAnalysisResult> {
-  const { tailwindPrefix, applyFixes = true, plugins, includeDetails = false } =
-    options;
+  const {
+    tailwindPrefix,
+    applyFixes = true,
+    plugins,
+    includeDetails = false
+  } = options;
   const stats = { conflictCount: 0, redundancyCount: 0, suggestionCount: 0 };
   const replacements: Array<{ start: number; end: number; value: string }> = [];
   const details: ReportClassDetails[] = [];

@@ -74,14 +74,14 @@ npx tailwind-architect lint ./apps/web
 
 ## Options
 
-| Option            | Description                                                                                                  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ |
-| `[path]`          | Directory to scan. Default: current directory (`.`).                                                         |
-| `--max-workers N` | Maximum number of concurrent file operations. Default: number of CPUs. Tune for large repos.                 |
-| `--dry-run`       | (**fix** only) Compute and report changes but do **not** write files.                                        |
-| `--report json`   | Output a machine-readable JSON report instead of the human-readable summary. Useful for scripts and tooling. |
-| `--output &lt;path&gt;` | Write the JSON report to a file. Use with `--report json` or alone; when used alone, still outputs JSON to the file. |
-| `--detailed`      | Include per-file details (conflicts, suggestions, redundant classes with locations) in the report. Use with `--report json` or `--output` for a full log. |
+| Option                  | Description                                                                                                                                               |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `[path]`                | Directory to scan. Default: current directory (`.`).                                                                                                      |
+| `--max-workers N`       | Maximum number of concurrent file operations. Default: number of CPUs. Tune for large repos.                                                              |
+| `--dry-run`             | (**fix** only) Compute and report changes but do **not** write files.                                                                                     |
+| `--report json`         | Output a machine-readable JSON report instead of the human-readable summary. Useful for scripts and tooling.                                              |
+| `--output &lt;path&gt;` | Write the JSON report to a file. Use with `--report json` or alone; when used alone, still outputs JSON to the file.                                      |
+| `--detailed`            | Include per-file details (conflicts, suggestions, redundant classes with locations) in the report. Use with `--report json` or `--output` for a full log. |
 
 ### Example: JSON report
 

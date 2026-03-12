@@ -9,7 +9,14 @@ import { tmpdir } from "node:os";
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const cliDir = join(__dirname, "..");
 const cliPath = join(cliDir, "dist", "cli.js");
-const fixtureDir = join(cliDir, "..", "core", "test", "fixtures", "with-config");
+const fixtureDir = join(
+  cliDir,
+  "..",
+  "core",
+  "test",
+  "fixtures",
+  "with-config"
+);
 
 function runCli(args: string[]): {
   stdout: string;
@@ -92,11 +99,15 @@ describe("CLI rootDir validation", () => {
     const tmp = mkdtempSync(join(tmpdir(), "tailwind-architect-cli-"));
     const reportPath = join(tmp, "report.json");
     try {
-      const result = spawnSync(process.execPath, [cliPath, "analyze", fixtureDir, "--output", reportPath], {
-        cwd: cliDir,
-        encoding: "utf8",
-        env: { ...process.env }
-      });
+      const result = spawnSync(
+        process.execPath,
+        [cliPath, "analyze", fixtureDir, "--output", reportPath],
+        {
+          cwd: cliDir,
+          encoding: "utf8",
+          env: { ...process.env }
+        }
+      );
       expect(result.status).toBe(0);
       const content = await readFile(reportPath, "utf8");
       const payload = JSON.parse(content) as Record<string, unknown>;

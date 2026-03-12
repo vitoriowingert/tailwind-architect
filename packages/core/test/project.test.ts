@@ -69,10 +69,15 @@ describe("analyzeProject", () => {
     });
     expect(result.report.filesScannedPaths).toBeDefined();
     expect(Array.isArray(result.report.filesScannedPaths)).toBe(true);
-    expect(result.report.filesScannedPaths!.length).toBe(result.report.filesScanned);
+    expect(result.report.filesScannedPaths!.length).toBe(
+      result.report.filesScanned
+    );
     expect(result.report.perFileDetails).toBeDefined();
     expect(Array.isArray(result.report.perFileDetails)).toBe(true);
-    if (result.report.filesWithIssues > 0 && (result.report.perFileDetails?.length ?? 0) > 0) {
+    if (
+      result.report.filesWithIssues > 0 &&
+      (result.report.perFileDetails?.length ?? 0) > 0
+    ) {
       const entry = result.report.perFileDetails![0];
       expect(entry).toHaveProperty("filePath");
       expect(entry).toHaveProperty("entries");

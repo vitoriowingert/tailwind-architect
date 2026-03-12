@@ -57,7 +57,15 @@ function parseArgv(argv: string[]): CliOptions {
     }
   }
 
-  return { command, rootDir, maxWorkers, dryRun, reportJson, outputPath, detailed };
+  return {
+    command,
+    rootDir,
+    maxWorkers,
+    dryRun,
+    reportJson,
+    outputPath,
+    detailed
+  };
 }
 
 async function ensureRootDirExists(rootDir: string): Promise<void> {
@@ -79,8 +87,15 @@ async function ensureRootDirExists(rootDir: string): Promise<void> {
 }
 
 async function run(): Promise<void> {
-  const { command, rootDir, maxWorkers, dryRun, reportJson, outputPath, detailed } =
-    parseArgv(process.argv);
+  const {
+    command,
+    rootDir,
+    maxWorkers,
+    dryRun,
+    reportJson,
+    outputPath,
+    detailed
+  } = parseArgv(process.argv);
   await ensureRootDirExists(rootDir);
   const config = await loadArchitectConfig(rootDir);
 

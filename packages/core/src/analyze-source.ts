@@ -234,7 +234,10 @@ function visitExpressionForClassStrings(
       plugins,
       includeDetails
     );
-    const next = pushDetail(result, extracted?.location ?? getNodeLocation(node));
+    const next = pushDetail(
+      result,
+      extracted?.location ?? getNodeLocation(node)
+    );
     if (next !== node.value && applyFixes) {
       changed = queueStringLiteralReplacement(node, next, replacements);
     }
@@ -259,7 +262,10 @@ function visitExpressionForClassStrings(
       plugins,
       includeDetails
     );
-    const next = pushDetail(result, extracted?.location ?? getNodeLocation(node));
+    const next = pushDetail(
+      result,
+      extracted?.location ?? getNodeLocation(node)
+    );
     if (next !== value && applyFixes) {
       changed = queueTemplateReplacement(node, next, replacements);
     }
@@ -532,13 +538,13 @@ export function analyzeSourceCode(
           plugins,
           includeDetails
         );
-        const next =
-          typeof result === "string"
-            ? result
-            : result.value;
+        const next = typeof result === "string" ? result : result.value;
         if (includeDetails && typeof result === "object" && result.analysis) {
           fileDetails.push(
-            toReportClassDetails(result.analysis, extracted?.location ?? getNodeLocation(path.node.value))
+            toReportClassDetails(
+              result.analysis,
+              extracted?.location ?? getNodeLocation(path.node.value)
+            )
           );
         }
         if (applyFixes) {

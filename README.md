@@ -51,7 +51,25 @@ Options:
 - **`[path]`** — Directory to scan (default: current directory).
 - **`--max-workers N`** — Max concurrent file operations (default: CPU count).
 - **`--dry-run`** — For `fix`: compute changes but do not write files.
-- **`--report json`** — Output machine-readable JSON (includes `log`, `truncated`, `filesLimit`, and full report; see [docs/ci.md](docs/ci.md)).
+- **`--report json`** — Output machine-readable JSON (see [docs/ci.md](docs/ci.md) for full schema).
+- **`--output <path>`** — Write the JSON report to a file (e.g. `tailwind-report.json`). Can be used with or without `--report json`.
+- **`--detailed`** — Include per-file details (conflicts, suggestions, redundant classes with locations) in the JSON report.
+
+Examples:
+
+```bash
+# Basic human-readable report
+tailwind-architect analyze .
+
+# JSON report to stdout (for scripts / CI)
+tailwind-architect analyze . --report json
+
+# Full report written to a file, including the list of all scanned files
+tailwind-architect analyze . --output tailwind-report.json
+
+# Detailed per-file log (conflicts, suggestions, redundantRemoved, plugin lints)
+tailwind-architect analyze . --output tailwind-report.json --detailed
+```
 
 **Exit codes:** `lint` exits with `1` when there are issues (conflicts, redundancy, suggestions, or parse errors); otherwise `0`. Use in CI to fail the build. See [docs/ci.md](docs/ci.md) for examples.
 
