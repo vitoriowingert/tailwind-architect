@@ -6,7 +6,7 @@ import { analyzeSourceWithAdapter } from "./analyze-with-adapter.js";
 import { analyzeSourceCode } from "./analyze-source.js";
 import { loadPlugins } from "./plugins.js";
 import { loadTailwindContext } from "./tailwind-context.js";
-import type { AnalyzerConfig } from "./types.js";
+import type { AnalyzerConfig, ReportClassDetails } from "./types.js";
 
 type JobMessage = {
   type: "job";
@@ -14,6 +14,7 @@ type JobMessage = {
   filePath: string;
   config: AnalyzerConfig;
   mode: "analyze" | "fix" | "lint";
+  includeDetails?: boolean;
 };
 
 type ResultMessage = {
@@ -30,6 +31,7 @@ type ResultMessage = {
       suggestionCount: number;
     };
     classStrings?: string[];
+    details?: ReportClassDetails[];
   } | null;
   error: string | null;
 };
@@ -37,7 +39,8 @@ type ResultMessage = {
 async function processOne(
   filePath: string,
   config: AnalyzerConfig,
-  mode: "analyze" | "fix" | "lint"
+  mode: "analyze" | "fix" | "lint",
+  includeDetails: boolean
 ): Promise<ResultMessage["output"]> {
   const code = await readFile(filePath, "utf8");
   const dir = dirname(filePath);
@@ -55,21 +58,27 @@ async function processOne(
     const result = await analyzeSourceWithAdapter(code, config, spans, {
       tailwindPrefix: prefix,
       applyFixes,
-      plugins
+      plugins,
+      includeDetails
     });
-    return { ...result, classStrings: spans.map((s) => s.classString) };
+    return {
+      ...result,
+      classStrings: spans.map((s) => s.classString)
+    };
   }
   const output = analyzeSourceCode(code, config, {
     applyFixes,
     tailwindContext,
     plugins,
-    filename: filePath
+    filename: filePath,
+    includeDetails
   });
   return {
     code: output.code,
     changed: output.changed,
     stats: output.stats,
-    classStrings: output.classNodes.map((n) => n.rawString)
+    classStrings: output.classNodes.map((n) => n.rawString),
+    ...(output.details ? { details: output.details } : {})
   };
 }
 
@@ -78,8 +87,8 @@ const workerId = (workerData as { workerId?: number })?.workerId ?? 0;
 if (parentPort) {
   parentPort.on("message", (msg: JobMessage) => {
     if (msg.type !== "job") return;
-    const { id, filePath, config, mode } = msg;
-    processOne(filePath, config, mode)
+    const { id, filePath, config, mode, includeDetails = false } = msg;
+    processOne(filePath, config, mode, includeDetails)
       .then((output) => {
         parentPort!.postMessage({
           type: "result",

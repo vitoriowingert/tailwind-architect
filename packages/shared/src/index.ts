@@ -6,5 +6,9 @@ export type {
   FileIssue,
   FileParseError,
   LogEntry,
-  ProjectAnalysis
+  PerFileDetailsEntry,
+  ProjectAnalysis,
+  ReportClassDetails,
+  ReportConflict,
+  ReportSuggestion
 } from "./types.js";

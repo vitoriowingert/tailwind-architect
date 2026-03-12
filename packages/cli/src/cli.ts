@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { cwd, exit } from "node:process";
-import { stat } from "node:fs/promises";
+import { stat, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { analyzeProject, loadArchitectConfig } from "@tailwind-architect/core";
 
@@ -12,6 +12,8 @@ type CliOptions = {
   maxWorkers?: number;
   dryRun: boolean;
   reportJson: boolean;
+  outputPath?: string;
+  detailed: boolean;
 };
 
 function parseArgv(argv: string[]): CliOptions {
@@ -21,6 +23,8 @@ function parseArgv(argv: string[]): CliOptions {
   let maxWorkers: number | undefined;
   let dryRun = false;
   let reportJson = false;
+  let outputPath: string | undefined;
+  let detailed = false;
 
   let i = 0;
   if (args[0] === "analyze" || args[0] === "fix" || args[0] === "lint") {
@@ -39,6 +43,12 @@ function parseArgv(argv: string[]): CliOptions {
     } else if (arg === "--report" && args[i + 1] === "json") {
       reportJson = true;
       i += 2;
+    } else if (arg === "--output" && args[i + 1] !== undefined) {
+      outputPath = resolve(cwd(), args[i + 1]);
+      i += 2;
+    } else if (arg === "--detailed") {
+      detailed = true;
+      i += 1;
     } else if (!arg.startsWith("-")) {
       rootDir = resolve(cwd(), arg);
       i += 1;
@@ -47,7 +57,7 @@ function parseArgv(argv: string[]): CliOptions {
     }
   }
 
-  return { command, rootDir, maxWorkers, dryRun, reportJson };
+  return { command, rootDir, maxWorkers, dryRun, reportJson, outputPath, detailed };
 }
 
 async function ensureRootDirExists(rootDir: string): Promise<void> {
@@ -69,9 +79,8 @@ async function ensureRootDirExists(rootDir: string): Promise<void> {
 }
 
 async function run(): Promise<void> {
-  const { command, rootDir, maxWorkers, dryRun, reportJson } = parseArgv(
-    process.argv
-  );
+  const { command, rootDir, maxWorkers, dryRun, reportJson, outputPath, detailed } =
+    parseArgv(process.argv);
   await ensureRootDirExists(rootDir);
   const config = await loadArchitectConfig(rootDir);
 
@@ -80,10 +89,12 @@ async function run(): Promise<void> {
     config,
     mode: command,
     maxWorkers,
-    dryRun: command === "fix" ? dryRun : undefined
+    dryRun: command === "fix" ? dryRun : undefined,
+    includeDetails: detailed
   });
 
-  if (reportJson) {
+  const needsPayload = reportJson || outputPath != null;
+  if (needsPayload) {
     const payload = {
       command,
       filesScanned: report.filesScanned,
@@ -98,9 +109,17 @@ async function run(): Promise<void> {
       truncated: report.truncated ?? false,
       filesLimit: report.filesLimit ?? null,
       log: report.log ?? [],
+      filesScannedPaths: report.filesScannedPaths ?? [],
+      perFileDetails: report.perFileDetails ?? [],
       ...(command === "fix" ? { changedFiles } : {})
     };
-    console.log(JSON.stringify(payload, null, 0));
+    const json = JSON.stringify(payload, null, 0);
+    if (outputPath != null) {
+      await writeFile(outputPath, json, "utf8");
+    }
+    if (reportJson && outputPath == null) {
+      console.log(json);
+    }
   } else {
     console.log(`Tailwind Architect :: ${command}`);
     console.log(`Scanned files: ${report.filesScanned}`);

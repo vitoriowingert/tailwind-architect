@@ -10,7 +10,11 @@ import { findDuplicatePatterns } from "./duplicate-patterns.js";
 import { loadPlugins } from "./plugins.js";
 import { loadTailwindContext } from "./tailwind-context.js";
 import { IGNORE_DIRS, SOURCE_EXTENSIONS } from "@tailwind-architect/shared";
-import type { AnalyzerConfig, ProjectAnalysis } from "./types.js";
+import type {
+  AnalyzerConfig,
+  PerFileDetailsEntry,
+  ProjectAnalysis
+} from "./types.js";
 
 const DEFAULT_MAX_PER_FILE_ENTRIES = 2000;
 
@@ -52,6 +56,8 @@ type AnalyzeProjectOptions = {
   maxPerFileEntries?: number;
   /** When set, only process the first N source files (for large workspaces). */
   maxFiles?: number;
+  /** When true, include per-file details (conflicts, suggestions, etc.) in the report. */
+  includeDetails?: boolean;
 };
 
 type AnalyzeProjectResult = {
@@ -117,6 +123,7 @@ type WorkerResult = {
       suggestionCount: number;
     };
     classStrings?: string[];
+    details?: PerFileDetailsEntry["entries"];
   } | null;
   error?: unknown;
 };
@@ -136,6 +143,7 @@ type JobMessage = {
   filePath: string;
   config: AnalyzerConfig;
   mode: "analyze" | "fix" | "lint";
+  includeDetails?: boolean;
 };
 
 async function runWithWorkers(
@@ -165,7 +173,8 @@ async function runWithWorkers(
         id,
         filePath,
         config: options.config,
-        mode: options.mode
+        mode: options.mode,
+        includeDetails: options.includeDetails
       } satisfies JobMessage);
     }
 
@@ -230,8 +239,10 @@ export async function analyzeProject(
     });
   }
   report.filesScanned = files.length;
+  report.filesScannedPaths = [...files];
   const maxPerFile = options.maxPerFileEntries ?? DEFAULT_MAX_PER_FILE_ENTRIES;
   const dryRun = options.dryRun === true;
+  const includeDetails = options.includeDetails === true;
 
   let outcomes: WorkerResult[];
 
@@ -256,19 +267,24 @@ export async function analyzeProject(
           {
             tailwindPrefix: prefix,
             applyFixes: options.mode === "fix" && options.config.autoFix,
-            plugins
+            plugins,
+            includeDetails
           }
         );
         return {
           filePath,
-          output: { ...result, classStrings: spans.map((s) => s.classString) }
+          output: {
+            ...result,
+            classStrings: spans.map((s) => s.classString)
+          }
         };
       }
       const output = analyzeSourceCode(code, options.config, {
         applyFixes: options.mode === "fix" && options.config.autoFix,
         tailwindContext,
         plugins,
-        filename: filePath
+        filename: filePath,
+        includeDetails
       });
       const classStrings = output.classNodes.map((n) => n.rawString);
       return {
@@ -277,7 +293,8 @@ export async function analyzeProject(
           code: output.code,
           changed: output.changed,
           stats: output.stats,
-          classStrings
+          classStrings,
+          ...(output.details ? { details: output.details } : {})
         }
       };
     } catch (error) {
@@ -338,6 +355,11 @@ export async function analyzeProject(
     if (shouldWrite) {
       await writeFile(filePath, output.code, "utf8");
       changedFiles.push(filePath);
+    }
+
+    if (includeDetails && output.details && output.details.length > 0) {
+      if (!report.perFileDetails) report.perFileDetails = [];
+      report.perFileDetails.push({ filePath, entries: output.details });
     }
   }
 

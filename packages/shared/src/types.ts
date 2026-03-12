@@ -34,6 +34,42 @@ export type LogEntry = {
   message: string;
 };
 
+/** Serializable conflict for report (mirror of core Conflict). */
+export type ReportConflict = {
+  kind: "override" | "redundancy" | "impossible-combination";
+  property: string | null;
+  tokens: [string, string];
+};
+
+/** Serializable suggestion for report (mirror of core Suggestion). */
+export type ReportSuggestion = {
+  before: [string, string];
+  after: string;
+  kind: "merge-axis" | "extract-pattern";
+};
+
+/** Per-class-string details: location + issues. */
+export type ReportClassDetails = {
+  location: {
+    start: number;
+    end: number;
+    startLine: number;
+    startColumn: number;
+    endLine: number;
+    endColumn: number;
+  };
+  conflicts: ReportConflict[];
+  suggestions: ReportSuggestion[];
+  redundantRemoved: string[];
+  pluginLints?: { message: string }[];
+};
+
+/** Per-file detailed report (only when includeDetails is requested). */
+export type PerFileDetailsEntry = {
+  filePath: string;
+  entries: ReportClassDetails[];
+};
+
 export type ProjectAnalysis = {
   filesScanned: number;
   filesWithIssues: number;
@@ -50,4 +86,8 @@ export type ProjectAnalysis = {
   filesLimit?: number;
   /** Structured log entries (info/warn) for the run. */
   log?: LogEntry[];
+  /** Full list of scanned file paths. */
+  filesScannedPaths?: string[];
+  /** Per-file details (conflicts, suggestions, etc.) when includeDetails is true. */
+  perFileDetails?: PerFileDetailsEntry[];
 };

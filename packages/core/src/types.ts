@@ -6,7 +6,11 @@ export type {
   FeatureFlags,
   FileIssue,
   FileParseError,
-  ProjectAnalysis
+  PerFileDetailsEntry,
+  ProjectAnalysis,
+  ReportClassDetails,
+  ReportConflict,
+  ReportSuggestion
 } from "@tailwind-architect/shared";
 
 export type UtilityResolver = {

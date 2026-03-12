@@ -3,7 +3,7 @@
   "displayName": "Tailwind Architect",
   "icon": "images/logo.png",
   "description": "Analyze and fix Tailwind CSS classes: sort, remove redundancy, detect conflicts",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "license": "MIT",
   "type": "module",
   "publisher": "vitoriowingert",
@@ -59,13 +59,17 @@
       }
     }
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vitoriowingert/tailwind-architect.git"
+  },
   "scripts": {
     "compile": "tsc -p .",
     "build": "npm run compile && node build.mjs",
-    "package": "npx vsce package --no-dependencies"
+    "package": "npx vsce package --no-dependencies && node scripts/clean-vsix.mjs"
   },
   "dependencies": {
-    "@tailwind-architect/core": "1.0.8"
+    "@tailwind-architect/core": "1.0.9"
   },
   "devDependencies": {
     "@types/vscode": "^1.74.0",

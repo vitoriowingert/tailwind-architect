@@ -3923,10 +3923,43 @@ var init_analyze_class_list = __esm({
 });
 
 // ../core/dist/analyze-with-adapter.js
+function offsetToLineColumn(code, offset) {
+  const lines = code.slice(0, offset).split("\n");
+  const line = lines.length;
+  const column = (lines[lines.length - 1] ?? "").length;
+  return { line, column };
+}
+function toReportClassDetails(analysis, span, code) {
+  const start = offsetToLineColumn(code, span.start);
+  const end = offsetToLineColumn(code, span.end);
+  return {
+    location: {
+      start: span.start,
+      end: span.end,
+      startLine: start.line,
+      startColumn: start.column,
+      endLine: end.line,
+      endColumn: end.column
+    },
+    conflicts: analysis.conflicts.map((c) => ({
+      kind: c.kind,
+      property: c.property,
+      tokens: c.tokens
+    })),
+    suggestions: analysis.suggestions.map((s) => ({
+      before: s.before,
+      after: s.after,
+      kind: s.kind
+    })),
+    redundantRemoved: [...analysis.redundantRemoved],
+    pluginLints: (analysis.pluginLints?.length ?? 0) > 0 ? analysis.pluginLints.map((l) => ({ message: l.message })) : void 0
+  };
+}
 async function analyzeSourceWithAdapter(code, config, spans, options = {}) {
-  const { tailwindPrefix, applyFixes = true, plugins } = options;
+  const { tailwindPrefix, applyFixes = true, plugins, includeDetails = false } = options;
   const stats = { conflictCount: 0, redundancyCount: 0, suggestionCount: 0 };
   const replacements = [];
+  const details = [];
   for (const span of spans) {
     const classList = splitClassString(span.classString);
     if (classList.length === 0)
@@ -3938,6 +3971,9 @@ async function analyzeSourceWithAdapter(code, config, spans, options = {}) {
     stats.conflictCount += analysis.conflicts.length;
     stats.redundancyCount += analysis.redundantRemoved.length;
     stats.suggestionCount += analysis.suggestions.length + (analysis.pluginLints?.length ?? 0);
+    if (includeDetails) {
+      details.push(toReportClassDetails(analysis, span, code));
+    }
     if (applyFixes) {
       const transformed = analysis.transformed.join(" ");
       if (transformed !== span.classString) {
@@ -3950,14 +3986,24 @@ async function analyzeSourceWithAdapter(code, config, spans, options = {}) {
     }
   }
   if (replacements.length === 0) {
-    return { code, changed: false, stats };
+    return {
+      code,
+      changed: false,
+      stats,
+      ...includeDetails ? { details } : {}
+    };
   }
   const sorted = [...replacements].sort((a, b) => b.start - a.start);
   let output = code;
   for (const r of sorted) {
     output = output.slice(0, r.start) + r.value + output.slice(r.end);
   }
-  return { code: output, changed: true, stats };
+  return {
+    code: output,
+    changed: true,
+    stats,
+    ...includeDetails ? { details } : {}
+  };
 }
 var init_analyze_with_adapter = __esm({
   "../core/dist/analyze-with-adapter.js"() {
@@ -47390,7 +47436,24 @@ function formatReadability(classNames) {
 ${chunked.map((line) => `  ${line}`).join("\n")}
 `;
 }
-function processClassValue(classValue, config, stats, analysisCache, tailwindPrefix, plugins) {
+function toReportClassDetails2(analysis, location) {
+  return {
+    location: { ...location },
+    conflicts: analysis.conflicts.map((c) => ({
+      kind: c.kind,
+      property: c.property,
+      tokens: c.tokens
+    })),
+    suggestions: analysis.suggestions.map((s) => ({
+      before: s.before,
+      after: s.after,
+      kind: s.kind
+    })),
+    redundantRemoved: [...analysis.redundantRemoved],
+    pluginLints: (analysis.pluginLints?.length ?? 0) > 0 ? analysis.pluginLints.map((l) => ({ message: l.message })) : void 0
+  };
+}
+function processClassValue(classValue, config, stats, analysisCache, tailwindPrefix, plugins, includeDetails) {
   if (classValue.includes("${")) {
     return classValue;
   }
@@ -47408,7 +47471,11 @@ function processClassValue(classValue, config, stats, analysisCache, tailwindPre
   stats.suggestionCount += analysis.suggestions.length + (analysis.pluginLints?.length ?? 0);
   stats.classesTouched += 1;
   const transformed = config.readabilityMode ? formatReadability(analysis.transformed) : analysis.transformed.join(" ");
-  return transformed === analysis.original.join(" ") ? classValue : transformed;
+  const value = transformed === analysis.original.join(" ") ? classValue : transformed;
+  if (includeDetails) {
+    return { value, analysis };
+  }
+  return value;
 }
 function applyReplacements(source, replacements) {
   const sorted = [...replacements].sort((a, b) => b.start - a.start);
@@ -47441,7 +47508,7 @@ function queueTemplateReplacement(node, value, replacements) {
   });
   return true;
 }
-function visitExpressionForClassStrings(node, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins) {
+function visitExpressionForClassStrings(node, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins, fileDetails, includeDetails) {
   if (node.start == null || node.end == null)
     return false;
   const visitKey = `${node.type}:${node.start}:${node.end}`;
@@ -47450,12 +47517,20 @@ function visitExpressionForClassStrings(node, config, stats, analysisCache, clas
   }
   visited.add(visitKey);
   let changed = false;
+  const pushDetail = (result, location) => {
+    const value = typeof result === "string" ? result : result.value;
+    if (includeDetails && typeof result === "object" && result.analysis) {
+      fileDetails.push(toReportClassDetails2(result.analysis, location));
+    }
+    return value;
+  };
   if (t.isStringLiteral(node)) {
     const extracted = classNodeForValue(node, node.value);
     if (extracted && extracted.classes.length > 0) {
       classNodes.push(extracted);
     }
-    const next = processClassValue(node.value, config, stats, analysisCache, tailwindPrefix, plugins);
+    const result = processClassValue(node.value, config, stats, analysisCache, tailwindPrefix, plugins, includeDetails);
+    const next = pushDetail(result, extracted?.location ?? getNodeLocation(node));
     if (next !== node.value && applyFixes) {
       changed = queueStringLiteralReplacement(node, next, replacements);
     }
@@ -47470,7 +47545,8 @@ function visitExpressionForClassStrings(node, config, stats, analysisCache, clas
     if (extracted && extracted.classes.length > 0) {
       classNodes.push(extracted);
     }
-    const next = processClassValue(value, config, stats, analysisCache, tailwindPrefix, plugins);
+    const result = processClassValue(value, config, stats, analysisCache, tailwindPrefix, plugins, includeDetails);
+    const next = pushDetail(result, extracted?.location ?? getNodeLocation(node));
     if (next !== value && applyFixes) {
       changed = queueTemplateReplacement(node, next, replacements);
     }
@@ -47480,31 +47556,44 @@ function visitExpressionForClassStrings(node, config, stats, analysisCache, clas
     for (const element of node.elements) {
       if (!element || t.isSpreadElement(element))
         continue;
-      changed = visitExpressionForClassStrings(element, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins) || changed;
+      changed = visitExpressionForClassStrings(element, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins, fileDetails, includeDetails) || changed;
     }
   }
   if (t.isConditionalExpression(node)) {
-    changed = visitExpressionForClassStrings(node.consequent, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins) || changed;
-    changed = visitExpressionForClassStrings(node.alternate, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins) || changed;
+    changed = visitExpressionForClassStrings(node.consequent, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins, fileDetails, includeDetails) || changed;
+    changed = visitExpressionForClassStrings(node.alternate, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins, fileDetails, includeDetails) || changed;
   }
   if (t.isLogicalExpression(node)) {
-    changed = visitExpressionForClassStrings(node.right, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix) || changed;
+    changed = visitExpressionForClassStrings(node.right, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins, fileDetails, includeDetails) || changed;
   }
   if (t.isObjectExpression(node)) {
     for (const property of node.properties) {
       if (t.isSpreadElement(property) && t.isExpression(property.argument)) {
-        changed = visitExpressionForClassStrings(property.argument, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins) || changed;
+        changed = visitExpressionForClassStrings(property.argument, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins, fileDetails, includeDetails) || changed;
       }
       if (t.isObjectProperty(property)) {
         if (t.isStringLiteral(property.key)) {
-          changed = visitExpressionForClassStrings(property.key, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins) || changed;
+          changed = visitExpressionForClassStrings(property.key, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins, fileDetails, includeDetails) || changed;
         } else if (property.computed && t.isExpression(property.key)) {
-          changed = visitExpressionForClassStrings(property.key, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins) || changed;
+          changed = visitExpressionForClassStrings(property.key, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins, fileDetails, includeDetails) || changed;
         }
       }
     }
   }
   return changed;
+}
+function getNodeLocation(node) {
+  const loc = node.loc;
+  const start = node.start ?? 0;
+  const end = node.end ?? start;
+  return {
+    start,
+    end,
+    startLine: loc?.start.line ?? 1,
+    startColumn: loc?.start.column ?? 0,
+    endLine: loc?.end.line ?? 1,
+    endColumn: loc?.end.column ?? 0
+  };
 }
 function isClassAttribute(name) {
   return t.isJSXIdentifier(name) && (name.name === "className" || name.name === "class");
@@ -47534,12 +47623,20 @@ function analyzeSourceCode(code, config, options = {}) {
   const analysisCache = /* @__PURE__ */ new Map();
   const visited = /* @__PURE__ */ new Set();
   const applyFixes = options.applyFixes ?? true;
+  const includeDetails = options.includeDetails === true;
+  const fileDetails = [];
   let changed = false;
   const tr = traverseLib;
   const cand = tr?.default;
   const traverseFn = (typeof cand === "function" ? cand : void 0) ?? (typeof cand?.default === "function" ? cand.default : void 0) ?? (typeof traverseLib === "function" ? traverseLib : void 0);
   if (typeof traverseFn !== "function") {
-    return { code, changed: false, stats, classNodes };
+    return {
+      code,
+      changed: false,
+      stats,
+      classNodes,
+      ...includeDetails ? { details: fileDetails } : {}
+    };
   }
   const traverse = traverseFn;
   traverse(ast, {
@@ -47551,7 +47648,11 @@ function analyzeSourceCode(code, config, options = {}) {
         if (extracted && extracted.classes.length > 0) {
           classNodes.push(extracted);
         }
-        const next = processClassValue(path2.node.value.value, config, stats, analysisCache, tailwindPrefix, plugins);
+        const result = processClassValue(path2.node.value.value, config, stats, analysisCache, tailwindPrefix, plugins, includeDetails);
+        const next = typeof result === "string" ? result : result.value;
+        if (includeDetails && typeof result === "object" && result.analysis) {
+          fileDetails.push(toReportClassDetails2(result.analysis, extracted?.location ?? getNodeLocation(path2.node.value)));
+        }
         if (applyFixes) {
           const queued = queueStringLiteralReplacement(path2.node.value, next, replacements);
           if (queued && next !== path2.node.value.value)
@@ -47560,7 +47661,7 @@ function analyzeSourceCode(code, config, options = {}) {
         return;
       }
       if (t.isJSXExpressionContainer(path2.node.value) && !t.isCallExpression(path2.node.value.expression)) {
-        changed = visitExpressionForClassStrings(path2.node.value.expression, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins) || changed;
+        changed = visitExpressionForClassStrings(path2.node.value.expression, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins, fileDetails, includeDetails) || changed;
       }
     },
     CallExpression(path2) {
@@ -47572,7 +47673,7 @@ function analyzeSourceCode(code, config, options = {}) {
       for (const arg of path2.node.arguments) {
         if (!t.isExpression(arg))
           continue;
-        changed = visitExpressionForClassStrings(arg, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins) || changed;
+        changed = visitExpressionForClassStrings(arg, config, stats, analysisCache, classNodes, replacements, visited, applyFixes, tailwindPrefix, plugins, fileDetails, includeDetails) || changed;
       }
     }
   });
@@ -47583,10 +47684,17 @@ function analyzeSourceCode(code, config, options = {}) {
       code: output,
       changed: actuallyChanged,
       stats,
-      classNodes
+      classNodes,
+      ...includeDetails ? { details: fileDetails } : {}
     };
   }
-  return { code, changed: false, stats, classNodes };
+  return {
+    code,
+    changed: false,
+    stats,
+    classNodes,
+    ...includeDetails ? { details: fileDetails } : {}
+  };
 }
 function extractClassNodesFromSource(code, config, options = {}) {
   return analyzeSourceCode(code, config, {
@@ -47918,7 +48026,8 @@ async function runWithWorkers(files, options) {
         id,
         filePath,
         config: options.config,
-        mode: options.mode
+        mode: options.mode,
+        includeDetails: options.includeDetails
       });
     }
     function onMessage(msg) {
@@ -47971,8 +48080,10 @@ async function analyzeProject(options) {
     });
   }
   report.filesScanned = files.length;
+  report.filesScannedPaths = [...files];
   const maxPerFile = options.maxPerFileEntries ?? DEFAULT_MAX_PER_FILE_ENTRIES;
   const dryRun = options.dryRun === true;
+  const includeDetails = options.includeDetails === true;
   let outcomes;
   const inProcessWorker = async (filePath) => {
     const code = await readFile2(filePath, "utf8");
@@ -47987,18 +48098,23 @@ async function analyzeProject(options) {
         const result = await analyzeSourceWithAdapter(code, options.config, spans, {
           tailwindPrefix: prefix,
           applyFixes: options.mode === "fix" && options.config.autoFix,
-          plugins
+          plugins,
+          includeDetails
         });
         return {
           filePath,
-          output: { ...result, classStrings: spans.map((s) => s.classString) }
+          output: {
+            ...result,
+            classStrings: spans.map((s) => s.classString)
+          }
         };
       }
       const output = analyzeSourceCode(code, options.config, {
         applyFixes: options.mode === "fix" && options.config.autoFix,
         tailwindContext,
         plugins,
-        filename: filePath
+        filename: filePath,
+        includeDetails
       });
       const classStrings = output.classNodes.map((n) => n.rawString);
       return {
@@ -48007,7 +48123,8 @@ async function analyzeProject(options) {
           code: output.code,
           changed: output.changed,
           stats: output.stats,
-          classStrings
+          classStrings,
+          ...output.details ? { details: output.details } : {}
         }
       };
     } catch (error) {
@@ -48052,6 +48169,11 @@ async function analyzeProject(options) {
     if (shouldWrite) {
       await writeFile(filePath, output.code, "utf8");
       changedFiles.push(filePath);
+    }
+    if (includeDetails && output.details && output.details.length > 0) {
+      if (!report.perFileDetails)
+        report.perFileDetails = [];
+      report.perFileDetails.push({ filePath, entries: output.details });
     }
   }
   const filesData = outcomes.filter((o) => !!o.output).map((o) => ({

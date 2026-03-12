@@ -80,6 +80,8 @@ npx tailwind-architect lint ./apps/web
 | `--max-workers N` | Maximum number of concurrent file operations. Default: number of CPUs. Tune for large repos.                 |
 | `--dry-run`       | (**fix** only) Compute and report changes but do **not** write files.                                        |
 | `--report json`   | Output a machine-readable JSON report instead of the human-readable summary. Useful for scripts and tooling. |
+| `--output &lt;path&gt;` | Write the JSON report to a file. Use with `--report json` or alone; when used alone, still outputs JSON to the file. |
+| `--detailed`      | Include per-file details (conflicts, suggestions, redundant classes with locations) in the report. Use with `--report json` or `--output` for a full log. |
 
 ### Example: JSON report
 
@@ -87,7 +89,14 @@ npx tailwind-architect lint ./apps/web
 npx tailwind-architect analyze --report json
 ```
 
-The JSON includes: `command`, `filesScanned`, `filesWithIssues`, `conflictCount`, `redundancyCount`, `suggestionCount`, `parseErrorCount`, `parseErrors`, `perFile`, `duplicatePatterns`, `truncated`, `filesLimit`, `log` (array of `{ level, message }`), and for `fix`: `changedFiles`.
+To write the report to a file (with the full list of scanned files and optional per-file details):
+
+```bash
+npx tailwind-architect analyze --output report.json
+npx tailwind-architect analyze --output report.json --detailed
+```
+
+The JSON includes: `command`, `filesScanned`, `filesWithIssues`, `conflictCount`, `redundancyCount`, `suggestionCount`, `parseErrorCount`, `parseErrors`, `perFile`, `duplicatePatterns`, `truncated`, `filesLimit`, `log` (array of `{ level, message }`), `filesScannedPaths` (array of all scanned file paths), `perFileDetails` (when `--detailed` is used: per-file entries with `filePath`, `entries` of `{ location, conflicts, suggestions, redundantRemoved, pluginLints }`), and for `fix`: `changedFiles`.
 
 ---
 

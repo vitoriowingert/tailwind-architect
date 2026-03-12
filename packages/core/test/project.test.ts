@@ -59,4 +59,33 @@ describe("analyzeProject", () => {
       result.report.log!.some((e) => e.message.includes("Scan complete"))
     ).toBe(true);
   });
+
+  it("includes filesScannedPaths and perFileDetails when includeDetails is true", async () => {
+    const result = await analyzeProject({
+      rootDir: fixtureDir,
+      config: defaultConfig,
+      mode: "analyze",
+      includeDetails: true
+    });
+    expect(result.report.filesScannedPaths).toBeDefined();
+    expect(Array.isArray(result.report.filesScannedPaths)).toBe(true);
+    expect(result.report.filesScannedPaths!.length).toBe(result.report.filesScanned);
+    expect(result.report.perFileDetails).toBeDefined();
+    expect(Array.isArray(result.report.perFileDetails)).toBe(true);
+    if (result.report.filesWithIssues > 0 && (result.report.perFileDetails?.length ?? 0) > 0) {
+      const entry = result.report.perFileDetails![0];
+      expect(entry).toHaveProperty("filePath");
+      expect(entry).toHaveProperty("entries");
+      expect(Array.isArray(entry.entries)).toBe(true);
+      if (entry.entries.length > 0) {
+        const detail = entry.entries[0];
+        expect(detail).toHaveProperty("location");
+        expect(detail.location).toHaveProperty("startLine");
+        expect(detail.location).toHaveProperty("startColumn");
+        expect(detail).toHaveProperty("conflicts");
+        expect(detail).toHaveProperty("suggestions");
+        expect(detail).toHaveProperty("redundantRemoved");
+      }
+    }
+  });
 });
