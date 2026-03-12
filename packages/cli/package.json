@@ -1,6 +1,6 @@
 {
   "name": "tailwind-architect",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "repository": {
     "type": "git",
     "url": "https://github.com/tailwind-architect/tailwind-architect.git"
@@ -21,6 +21,6 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@tailwind-architect/core": "1.0.14"
+    "@tailwind-architect/core": "1.0.15"
   }
 }
