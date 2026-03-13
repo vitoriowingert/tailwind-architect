@@ -1,0 +1,10 @@
+---
+description: When bumping a version, also generate the extension package (VSIX).
+alwaysApply: true
+---
+
+# Release rule: version bump requires packaging
+
+- If you **bump any package version** (e.g. `packages/*/package.json`), you must also **generate the extension package** in the same change set.
+- **Required command**: from repo root run `npm run release` (this builds and packages the VSIX).
+- If `npm run release` fails, fix it before creating a tag/release or pushing a release branch.
