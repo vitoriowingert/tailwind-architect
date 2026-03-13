@@ -1,0 +1,11 @@
+---
+description: Run full CI/deploy flow before any push; never push if validation fails.
+alwaysApply: true
+---
+
+# Pre-push: full validation required
+
+- **Never push** without running the full validation flow. If any step fails, fix it before pushing.
+- **Validation = same steps as CI and publish:** format check, lint, typecheck, build, test. For release branches, also run the release flow (build + package VSIX) so publish-npm would succeed.
+- **Rationale:** Errors (e.g. ESLint in `metrics/`, Prettier, module type) must be caught locally. CI and publish jobs must not fail for issues that could have been caught by running the same steps locally.
+- **Command:** From repo root run `npm run ci` (or the ordered steps: `npm run format:check && npm run lint && npm run typecheck && npm run build && npm run test`). Before creating a release / tag, also run `npm run release` so the publish workflow would pass.

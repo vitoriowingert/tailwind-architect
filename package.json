@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "ci": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run test",
     "benchmark": "node packages/cli/dist/cli.js analyze ."
   },
   "devDependencies": {
