@@ -14,7 +14,8 @@ export default tseslint.config(
       "**/*.cjs",
       "**/fixtures/**",
       "website/.vitepress/cache/**",
-      "examples/**"
+      "examples/**",
+      "metrics/**"
     ]
   },
   {
